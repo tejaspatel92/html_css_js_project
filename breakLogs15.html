@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>15 MIN BREAK LOGS</title>
+  <style>
+    button {
+      background-color: green;
+      color: white;
+      padding: 10px;
+      border: none;
+      margin: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button.gray {
+      background-color: gray;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- You can add more buttons by copying this and changing the data-target -->
+<button data-target="1" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">A3</button>
+<button data-target="2" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">CTR1</button>
+<button data-target="3" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">CTR2</button>
+<button data-target="4" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">SD1</button>
+<button data-target="5" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">M1</button>
+<br/>
+<button data-target="6" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">R1</button>
+<button data-target="7" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">R2</button>
+<button data-target="8" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">R3</button>
+<button data-target="9" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">R4</button>
+<button data-target="10" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">R5</button>
+<br/>
+<button data-target="11" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">E1</button>
+<button data-target="12" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">E2</button>
+<button data-target="13" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">E3</button>
+<button data-target="14" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">E4</button>
+<button data-target="15" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">E5</button>
+<button data-target="16" onclick="handleTimeButton(this)" ondblclick="resetSingleButton(this)">E6</button>
+  
+  
+<div id="output-1"> <p><b>15 MIN BREAK LOGS: </b></p> </div>
+<div id="output-1"> <p>A3: <span id="text1"></span></p> </div>
+<div id="output-1"> <p>CTR1: <span id="text2"></span></p> </div>
+<div id="output-1"> <p>CTR2: <span id="text3"></span></p> </div>
+<div id="output-1"> <p>SD1: <span id="text4"></span></p> </div>
+<div id="output-1"> <p>M1: <span id="text5"></span></p> </div>
+<br/>
+<div id="output-1"> <p>R1: <span id="text6"></span></p> </div>
+<div id="output-1"> <p>R2: <span id="text7"></span></p> </div>
+<div id="output-1"> <p>R3: <span id="text8"></span></p> </div>
+<div id="output-1"> <p>R4: <span id="text9"></span></p> </div>
+<div id="output-1"> <p>R5: <span id="text10"></span></p> </div>
+<br/>
+<div id="output-1"> <p>E1: <span id="text11"></span></p> </div>
+<div id="output-1"> <p>E2: <span id="text12"></span></p> </div>
+<div id="output-1"> <p>E3: <span id="text13"></span></p> </div>
+<div id="output-1"> <p>E4: <span id="text14"></span></p> </div>
+<div id="output-1"> <p>E5: <span id="text15"></span></p> </div>
+<div id="output-1"> <p>E6: <span id="text16"></span></p> </div>
+
+
+<script>
+    // Format time as HH:mm
+    function formatTime(date) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+
+    // Round up to the next 5-minute mark
+    function roundUpToNext5Min(date) {
+      const ms = 1000 * 60 * 5;
+      const rounded = new Date(Math.ceil(date.getTime() / ms) * ms);
+      return formatTime(rounded);
+    }
+    
+    //parse Input Time
+    function parseInputTime(input) {
+      const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+      if (!regex.test(input)) return null;
+
+      const [hours, minutes] = input.split(":").map(Number);
+      const now = new Date();
+      now.setHours(hours, minutes, 0, 0);
+      return now;
+    }
+
+
+    // Main function called by all buttons
+    function handleTimeButton(button) {
+      if (button.classList.contains('gray')) return;
+
+      const current = new Date();
+      const defaultTime = formatTime(current);
+
+      const userInput = prompt("Enter time in HH:mm format or leave unchanged for current time:", defaultTime);
+      if (userInput === null) return; // Cancelled
+
+      let now;
+      if (userInput.trim() === "") {
+        now = current;
+      } else {
+        const parsed = parseInputTime(userInput);
+        if (!parsed) {
+          alert("Invalid time format. Use HH:mm (e.g. 14:30)");
+          return;
+        }
+        now = parsed;
+      }
+
+      const future = new Date(now.getTime() + 15 * 60000);
+
+      const targetId = button.getAttribute('data-target');
+      const currentId = `text${targetId}`;
+
+	  document.getElementById(currentId).innerHTML = 
+        `${roundUpToNext5Min(now)} - ${roundUpToNext5Min(future)}`;
+
+      button.classList.add('gray');
+    }
+
+    function resetSingleButton(button) {
+      if (!button.classList.contains('gray')) return;
+
+      const confirmed = confirm("Reset this button and clear its time?");
+      if (!confirmed) return;
+
+      const targetId = button.getAttribute('data-target');
+      const currentId = `text${targetId}`;
+
+      document.getElementById(currentId).innerHTML = '';
+
+      button.classList.remove('gray');
+    }
+    
+    
+</script>
+
+</body>
+</html>
